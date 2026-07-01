@@ -574,13 +574,35 @@
             }
         }
 
+        // XOÁ ỨNG VIÊN (Chức năng mới thêm vào)
+        function deletePlayer(id, name) {
+            triggerConfirm(`Bạn có chắc chắn muốn xoá ứng viên "${name}" khỏi danh sách không?`, "Xác nhận xoá ứng viên", () => {
+                playersList = playersList.filter(p => p.id !== id);
+                localStorage.setItem('cloud_players', JSON.stringify(playersList));
+                
+                // Nếu ứng viên đang chọn bị xoá thì bỏ chọn
+                if (selectedCandidateId === id) {
+                    selectedCandidateId = null;
+                }
+                
+                syncAndCalculateVotes();
+                renderUI();
+                renderAdminPlayers();
+                checkIfUserAlreadyVoted();
+                triggerToast(`Đã xoá ứng viên "${name}" thành công.`, "success");
+            });
+        }
+
         function renderAdminPlayers() {
             const container = document.getElementById('admin-players-list-display');
             container.innerHTML = '';
             playersList.forEach(p => { 
                 container.innerHTML += `
                     <span class="bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5">
-                        ${p.name}
+                        <span>${p.name}</span>
+                        <button onclick="deletePlayer('${p.id}', '${p.name}')" class="text-rose-400 hover:text-rose-500 ml-1 font-bold focus:outline-none" title="Xoá ứng viên này">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
                     </span>`; 
             });
         }
